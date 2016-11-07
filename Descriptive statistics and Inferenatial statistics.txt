@@ -1,0 +1,210 @@
+install.packages("BSDA")# Z-test
+install.packages("car") #Levens Test
+install.packages("EnvStats") #One sample chisquare test
+install.packages("mvtnorm") #Support of multiple comparistion in anova
+install.packages("survival")#Support of multiple comparistion in anova
+install.packages("TH.data")#Support of multiple comparistion in anova
+install.packages("multcomp") #To do multiple comparistion in anova/glth
+
+library(e1071) # Supporting packages for Z-test
+library(lattice)# Supporting packages for Z-test
+library(BSDA)
+library(EnvStats)
+library(car)
+require(mvtnorm)
+require(survival)
+require(TH.data)
+library(multcomp)
+
+
+#1) Descriptive statistics
+Lungcapdata=read.delim(file="C:/Users/Ramesh/Desktop/R Project/Lungcapdata.txt",header=T)
+View(Lungcapdata)
+summary(Lungcapdata)
+sum(Lungcapdata$LungCap)
+min(Lungcapdata$LungCap)
+max(Lungcapdata$LungCap)
+range(Lungcapdata$LungCap)
+length(Lungcapdata$LungCap)
+mean(Lungcapdata$LungCap)
+sd(Lungcapdata$LungCap)
+var(Lungcapdata$LungCap)
+quantile(Lungcapdata$LungCap,prob=c(0.25,0.5,0.75,1))
+cov(Lungcapdata[,c(1:3)])
+cor(Lungcapdata[,c(1:3)])
+
+#2)One sample z-test #install.packages("BSDA")
+Lungcapdata=read.delim(file="C:/Users/Ramesh/Desktop/R Project/Lungcapdata.txt",header=T)
+z.test(x=Lungcapdata$LungCap, alternative = "two.sided", mu = 8,sigma.x=2.662008, conf.level = 0.95)#Default is two sided
+z.test(x=Lungcapdata$LungCap, alternative = "less", mu = 8,sigma.x=2.662008, conf.level = 0.95)
+z.test(x=Lungcapdata$Age, alternative = "greater", mu = 12,sigma.x=4, conf.level = 0.95)
+
+#3)One sample t-test
+Lungcapdata=read.delim(file="C:/Users/Ramesh/Desktop/R Project/Lungcapdata.txt",header=T)
+t.test(x=Lungcapdata$LungCap, alternative = "two.sided", mu = 8,conf.level = 0.95)#Default is two sided
+t.test(x=Lungcapdata$LungCap, alternative = "less", mu = 8,conf.level = 0.95)
+t.test(x=Lungcapdata$Age, alternative = "greater", mu = 7,conf.level = 0.95)
+
+#4) One sample Proportion
+binom.test(x=8,n=25, p = 0.5,alternative = "two.sided",conf.level = 0.95)
+binom.test(x=8,n=25, p = 0.1,alternative = "less",conf.level = 0.95)
+binom.test(x=8,n=25, p = 0.6,alternative = "greater",conf.level = 0.95)
+
+#5) One sample Proportion(Alternative method using Chisquare test)
+prop.test(x=8,n=25, p = 0.2,alternative = "two.sided",conf.level = 0.95)
+prop.test(x=8,n=25, p = 0.2,alternative = "less",conf.level = 0.95)
+prop.test(x=8,n=25, p = 0.6,alternative = "greater",conf.level = 0.95,correct=F)
+
+
+
+#5) One sample variance test(Chisquare test)
+Lungcapdata=read.delim(file="C:/Users/Ramesh/Desktop/R Project/Lungcapdata.txt",header=T)
+varTest(Lungcapdata$LungCap, alternative = "two.sided", conf.level = 0.95,sigma.squared =4 )
+varTest(Lungcapdata$LungCap, alternative = "less", conf.level = 0.95,sigma.squared =4 )
+varTest(Lungcapdata$LungCap, alternative = "greater", conf.level = 0.95,sigma.squared =4 )
+
+#6) Two sample Z-test
+Lungcapdata=read.delim(file="C:/Users/Ramesh/Desktop/R Project/Lungcapdata.txt",header=T)
+z.test(x=Lungcapdata$LungCap[Lungcapdata$Gender=="male"],y=Lungcapdata$LungCap[Lungcapdata$Gender=="female"], alternative = "two.sided", mu = 0,sigma.x=2.683238,sigma.y=2.564242, conf.level = 0.95)#Default is two sided
+
+z.test(x=Lungcapdata$LungCap[Lungcapdata$Gender=="male"],y=Lungcapdata$LungCap[Lungcapdata$Gender=="female"], alternative = "less", mu = 0,sigma.x=2.683238,sigma.y=2.564242, conf.level = 0.95)
+
+z.test(x=Lungcapdata$LungCap[Lungcapdata$Gender=="male"],y=Lungcapdata$LungCap[Lungcapdata$Gender=="female"], alternative = "greater", mu = 0,sigma.x=2.683238,sigma.y=2.564242, conf.level = 0.95)
+
+#9) Two sample proportion test
+x=table(Lungcapdata$Gender,Lungcapdata$Smoke)
+prop.test(x=x,alternative = "two.sided",conf.level = 0.95)
+prop.test(x=c(314,334),n=c(358,367),alternative = "two.sided",conf.level = 0.95)
+
+
+#7) Two sample t-test(variances are equal)
+Lungcapdata=read.delim(file="C:/Users/Ramesh/Desktop/R Project/Lungcapdata.txt",header=T)
+
+t.test(x=Lungcapdata$LungCap[Lungcapdata$Gender=="male"],y=Lungcapdata$LungCap[Lungcapdata$Gender=="female"], alternative = "two.sided", mu = 0,var.equal=T,conf.level = 0.95)#Default is two sided
+
+t.test(x=Lungcapdata$LungCap[Lungcapdata$Gender=="male"],y=Lungcapdata$LungCap[Lungcapdata$Gender=="female"], alternative = "less", mu = 0,var.equal=T,conf.level = 0.95)
+
+t.test(x=Lungcapdata$LungCap[Lungcapdata$Gender=="male"],y=Lungcapdata$LungCap[Lungcapdata$Gender=="female"], alternative = "greater", mu = 0,var.equal=T,conf.level = 0.95)
+
+#7) Two sample t-test(variances are not equal)
+
+Lungcapdata=read.delim(file="C:/Users/Ramesh/Desktop/R Project/Lungcapdata.txt",header=T)
+
+t.test(x=Lungcapdata$LungCap[Lungcapdata$Gender=="male"],y=Lungcapdata$LungCap[Lungcapdata$Gender=="female"], alternative = "two.sided", mu = 0,var.equal=F,conf.level = 0.95)#Default is two sided
+
+t.test(x=Lungcapdata$LungCap[Lungcapdata$Gender=="male"],y=Lungcapdata$LungCap[Lungcapdata$Gender=="female"], alternative = "less", mu = 0,var.equal=F,conf.level = 0.95)
+
+t.test(x=Lungcapdata$LungCap[Lungcapdata$Gender=="male"],y=Lungcapdata$LungCap[Lungcapdata$Gender=="female"], alternative = "greater", mu = 0,var.equal=F,conf.level = 0.95)
+
+#8) Paired T-test
+
+Lungcapdata=read.delim(file="C:/Users/Ramesh/Desktop/R Project/Lungcapdata.txt",header=T) 
+x=sample(Lungcapdata$LungCap[Lungcapdata$Gender=="male"],100)
+y=sample(Lungcapdata$LungCap[Lungcapdata$Gender=="male"],100)
+
+t.test(x=x,y=y, alternative = "two.sided", mu = 0,paired=T,conf.level = 0.95)#Default is two sided
+
+t.test(x=x,y=y, alternative = "less", mu = 0,paired=T,conf.level = 0.95)
+
+t.test(x=x,y=y, alternative = "greater", mu = 0,paired=T,conf.level = 0.95)
+
+#9) Two variance F-test
+Lungcapdata=read.delim(file="C:/Users/Ramesh/Desktop/R Project/Lungcapdata.txt",header=T) 
+var.test(x=Lungcapdata$LungCap[Lungcapdata$Gender=="male"],y=Lungcapdata$LungCap[Lungcapdata$Gender=="female"],alternative = "two.sided",conf.level = 0.95)
+
+var.test(x=Lungcapdata$LungCap[Lungcapdata$Gender=="male"],y=Lungcapdata$LungCap[Lungcapdata$Gender=="female"],alternative = "less",conf.level = 0.95)
+
+var.test(x=Lungcapdata$LungCap[Lungcapdata$Gender=="male"],y=Lungcapdata$LungCap[Lungcapdata$Gender=="female"],alternative = "greater",conf.level = 0.95)
+
+#10) Bartlett Test of Homogeneity of Variances(more than two variances)
+
+# Use Bartlett's test when the data come from normal distributions; Bartlett's test is not robust to departures from normality.Test statistic follows chisquare distribution
+#Use Levene's test when the data come from continuous, but not necessarily normal, distributions. This method considers the distances of the observations from their sample median rather than their sample mean, makes the test more robust for smaller samples.
+
+TC=read.delim(file="C:/Users/Ramesh/Desktop/R Project/ANOVA.txt",header=T) #Read the data fromexcel sheet ANOVA for thermal conductivity
+
+bartlett.test(x=TC$Data,g=TC$Coating)
+
+leveneTest(Data~Coating,data=TC) # Install.packages("car")
+
+TC=list(A=c(62,60,63,59),B=c(63,67,71,64,65,66),C=c(68,66,71,67,68,68),D=c(56,62,60,61,63,64,63,59))
+bartlett.test(TC)
+
+#11) one-way ANOVA
+
+TC=read.delim(file="C:/Users/Ramesh/Desktop/R Project/ANOVA.txt",header=T) #Read the data from notepad ANOVA for thermal conductivity
+attach(TC)
+
+#*******************Testing for equal variances
+bartlett.test(x=TC$Data,g=TC$Coating)
+leveneTest(Data~Coating,data=TC)
+#*******************one way ANOVA
+TC.ANOVA=aov(Data~Coating,TC)
+summary(TC.ANOVA)
+attributes(TC.ANOVA)
+plot(TC.ANOVA)
+TC.ANOVA$residuals
+TC.ANOVA$coef
+#*******************Multiple comparisions-Tukey
+TukeyHSD(TC.ANOVA)
+plot(TukeyHSD(TC.ANOVA))
+#*******************Multiple comparisions-Tukey Using multcomp package
+Tukey <- glht(TC.ANOVA, linfct=mcp(Coating="Tukey"))
+summary(Tukey)
+confint(Tukey)
+plot(Tukey)
+#*******************Multiple comparisions-Dunnett(Control group)
+Dunnet <- glht(TC.ANOVA, linfct=mcp(Coating="Dunnett"))
+summary(Dunnet)
+confint(Dunnet)
+plot(Dunnet)
+#*******************Multiple comparisions-with Control group(It uses dunnets method)
+Control<- glht(TC.ANOVA, linfct=mcp(Coating=c("A-D=0","B-D=0","C-D=0")))
+summary(Control)
+confint(Control)
+plot(Control)
+
+
+#11) Two-way ANOVA without replicates
+prod.twoway=read.delim(file="C:/Users/Ramesh/Desktop/R Project/ANOVA-2way.txt",header=T) 
+attach(prod.twoway)
+twoway=aov(Data~Analysts+LOB)
+summary(twoway)
+plot(twoway)
+attribute(twoway)
+TukeyHSD(twoway)
+plot(TukeyHSD(twoway))
+detach(prod.twoway)
+
+#12)Two-way ANOVA with replicates
+prod.replicate=read.delim(file="C:/Users/Ramesh/Desktop/R Project/ANOVA-2wayreplicate.txt",header=T) 
+attach(prod.replicate)
+replicate=aov(Data~Analyst*LOB)
+summary(replicate)
+plot(replicate)
+interaction.plot(LOB,Analyst,Data,col=c(2:4),lwd=3)
+attribute(replicate)
+TukeyHSD(replicate)
+plot(TukeyHSD(replicate))
+detach(prod.replicate)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
